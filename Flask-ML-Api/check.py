@@ -23,9 +23,15 @@ def predict(img):
     pred = model.predict(img)
     final = pred.argmax()
     return classes[final]
-mat = cv2.imread(r"C:\Users\UTKARSH\Desktop\Paytm hackathon\segmented\Apple___Apple_scab\0a14783a-838a-4d4f-a671-ff98011714c6___FREC_Scab 3288_final_masked.jpg")
+mat = cv2.imread(r"C:\Users\UTKARSH\Desktop\Paytm hackathon\segmented\Tomato___healthy\0a205a11-1e64-49f7-93c2-ad59312b4f83___RS_HL 0334_final_masked.jpg")
 mat = cv2.resize(mat, (50, 50))
 mat = mat / 255.0
 mat = mat.reshape(1, 50, 50, 3)
 pred = predict(mat)
 print(pred)
+import keras
+# import Keras-Preprocessing
+# import Keras-Applications
+print (cv2.__version__)
+print (keras.__version__)
+

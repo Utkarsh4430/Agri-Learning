@@ -3,6 +3,7 @@ from flask_cors import CORS
 import logging, os
 from werkzeug import secure_filename
 import numpy as np
+from keras.models import load_model
 from keras.models import model_from_json
 import sys
 import json
@@ -25,28 +26,29 @@ classes = {
 }
 
 
+
 app = Flask(__name__)
 CORS(app)
 file_handler = logging.FileHandler('server.log')
 app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
 
+port = int(os.environ.get('PORT', 33507))
+
 PROJECT_HOME = os.path.dirname(os.path.realpath(__file__))
 UPLOAD_FOLDER = '{}/uploads/'.format(PROJECT_HOME)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-filePath = os.getcwd() + "/model.h5"
-filePath2 = os.getcwd() + "/model.json"
-json_file = open(filePath2,"r")
-loaded_model_json = json_file.read()
-json_file.close()
-model = model_from_json(loaded_model_json)
-model.load_weights(filePath)
+filepath = os.getcwd() + "/model2.h5"
+model = load_model(filepath)
 
-def predict(img):
-    pred = model.predict(img)
-    final = pred.argmax()
-    return classes[final]
+# filePath = os.getcwd() + "/modelWeights.h5"
+# filePath2 = os.getcwd() + "/model.json"
+# json_file = open("model.json","r")
+# loaded_model_json = json_file.read()
+# json_file.close()
+# model = model_from_json(loaded_model_json)
+# model.load_weights(filePath)
 
 def create_new_folder(local_dir):
     newpath = local_dir
@@ -70,17 +72,20 @@ def api_root():
         saved_path = os.path.join(app.config['UPLOAD_FOLDER'], img_name)
         app.logger.info("saving {}".format(saved_path))
         img.save(saved_path)
-        # a = {"hellooooo": "from the python sideeeeee"}
+        a = {"hellooooo": "from the python sideeeeee"}
         mat = cv2.imread(saved_path)
         mat = cv2.resize(mat, (100, 100))
         mat = mat / 255.0
         mat = mat.reshape(1, 100, 100, 3)
-        pred = predict(mat)
-        response_data = {"response": pred }
+        print(mat)
+        print(mat.shape)
+        pred = model.predict(mat)
+        final = pred.argmax()
+        response_data = {"response": pred.tolist() }
         os.remove(os.path.join(app.config['UPLOADED_FOLDER'], img.filename))
         return jsonify(response_data);
     else:
     	return "Where is the image?"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=False)
+    app.run(debug=True, port=33507)
