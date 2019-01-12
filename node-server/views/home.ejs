@@ -1,22 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Web App</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-	 crossorigin="anonymous">
-	<link rel="stylesheet" href="/css/styles.css">
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-	 crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.11.7"></script>
+<%- include('partials/head.ejs') %>
+	
 </head>
 
 <body>
 	<%- include('partials/navigation.ejs') %>
 	<div class='container'>
+		<div class="card my-2 py-4">
+			<div class="card-body">
+				<strong>Step 1: </strong><p>Take a picture of the leaf</p>
+				<strong>Step 2: </strong><p>Upload the image below</p>
+				<strong>Step 3: </strong><p>Get to know if the crop has any disease or not and how to fix it</p>
+			</div>
+		</div>
+		<!-- <form action="/" method="POST" enctype="multipart/form-data">
+			<div class="row">
+				<div class="col-sm-12 col-md-8 col-lg-8">
+					<div class="custom-file">
+						<input type="file" class="custom-file-input" id="fileUpload" name="image">
+						<label class="custom-file-label" for="fileUpload">Choose file</label>
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-4 col-lg-4">
+					<button type="submit" class="btn btn-primary" id="submit">Submit</button>
+				</div>
+				<br />
+			</div>
+			<div class="row">
+				<div id="image-holder">
+					<img src="">
+				</div>
+			</div>
+		</form> -->
 		<form action="/" method="POST" enctype="multipart/form-data">
 			<div id="wrapper">
 				<input id="fileUpload" type="file" name="image">
@@ -26,27 +40,15 @@
 			<div>
 				<button type="submit" id="submit">Submit</button>
 			</div>
-			<!-- <div>
-			  <div class="inputoutput">
-			    <img id="imageSrc" alt="No Image" />
-			    <div class="caption">imageSrc <input type="file" id="fileInput" name="file" /></div>
-			  </div>
-			  <div class="inputoutput">
-			    <canvas id="canvasOutput" ></canvas>
-			    <div class="caption">canvasOutput</div>
-			  </div>
-			</div> -->
-		<!-- </form> -->
-		<!-- <main class="file-form">
-			<input type="file" id="file" multiple class="file-form__select-file">
-			<label for="file" class="file-form__select-file_label">Choose files</label>
-			<button type="submit" class="file-form__button file-form__button_predict" id="predict">Predict</button>
-			<button type="submit" class="file-form__button file-form__button_clear" id="clear">Clear</button>
-			<span class="file-form__files" id="number-of-files"></span>
-		</main>
-		<div id="preview"></div> -->
+		</form>
+		<div id="image-holder">
+			<img src="">
+		</div>
+			
 		<% if(hasError) { %>
 			<h1><%= errorMessage %></h1>
+		<% } else if (success && success.length > 0) { %>
+			<div class="alert alert-success" role="alert"><%= success %></div>
 		<% } %>
 	</div>
 	<script type="text/javascript" src="/js/home.js"></script>

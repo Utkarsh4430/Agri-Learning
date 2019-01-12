@@ -3,29 +3,20 @@ from flask_cors import CORS
 import logging, os
 from werkzeug import secure_filename
 import numpy as np
+import keras
+import keras_applications
+import keras_preprocessing
 from keras.models import load_model
 from keras.models import model_from_json
 import sys
 import json
 import cv2
 
-classes = {
-    0:'Apple-Apple Scab',
-    1:'Apple-Black Rot',
-    2:'Apple-Healthy',
-    3:'Corn-Common Rust',
-    4:'Corn-Healthy',
-    5:'Peach-Bacterial Spot',
-    6:'Peach-healthy',
-    7:'Potato-Early Blight',
-    8:'Potato-Late Blight',
-    9:'Potato-Healthy',
-    10:'Tomato-Bacterial Spot',
-    11:'Tomato-Tomato Mosaic Virus',
-    12:'Tomato-Healthy'
-}
-
-
+print(cv2.__version__)
+print(np.__version__)
+print(keras.__version__)
+print(keras_preprocessing.__version__)
+print(keras_applications.__version__)
 
 app = Flask(__name__)
 CORS(app)
@@ -39,8 +30,8 @@ PROJECT_HOME = os.path.dirname(os.path.realpath(__file__))
 UPLOAD_FOLDER = '{}/uploads/'.format(PROJECT_HOME)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-filepath = os.getcwd() + "/model2.h5"
-model = load_model(filepath)
+# filepath = os.getcwd() + "/model2.h5"
+# model = load_model(filepath)
 
 # filePath = os.getcwd() + "/modelWeights.h5"
 # filePath2 = os.getcwd() + "/model.json"
@@ -49,6 +40,31 @@ model = load_model(filepath)
 # json_file.close()
 # model = model_from_json(loaded_model_json)
 # model.load_weights(filePath)
+
+
+model = load_model("utkarsh.h5")
+
+classes = {
+    0: 'Apple-Apple Scab',
+    1: 'Apple-Black Rot',
+    2: 'Apple-Healthy',
+    3: 'Corn-Common Rust',
+    4: 'Corn-Healthy',
+    5: 'Peach-Bacterial Spot',
+    6: 'Peach-healthy',
+    7: 'Potato-Early Blight',
+    8: 'Potato-Late Blight',
+    9: 'Potato-Healthy',
+    10: 'Tomato-Bacterial Spot',
+    11: 'Tomato-Tomato Mosaic Virus',
+    12: 'Tomato-Healthy'
+}
+
+
+def predict(img):
+    pred = model.predict(img)
+    final = pred.argmax()
+    return classes[final]
 
 def create_new_folder(local_dir):
     newpath = local_dir
@@ -72,20 +88,17 @@ def api_root():
         saved_path = os.path.join(app.config['UPLOAD_FOLDER'], img_name)
         app.logger.info("saving {}".format(saved_path))
         img.save(saved_path)
-        a = {"hellooooo": "from the python sideeeeee"}
         mat = cv2.imread(saved_path)
-        mat = cv2.resize(mat, (100, 100))
+        mat = cv2.resize(mat, (50, 50))
         mat = mat / 255.0
-        mat = mat.reshape(1, 100, 100, 3)
-        print(mat)
-        print(mat.shape)
-        pred = model.predict(mat)
-        final = pred.argmax()
-        response_data = {"response": pred.tolist() }
-        os.remove(os.path.join(app.config['UPLOADED_FOLDER'], img.filename))
+        mat = mat.reshape(1, 50, 50, 3)
+        print(type(mat))
+        pred = predict(mat)
+        response_data = {"response": pred }
+        # os.remove(os.path.join(app.config['UPLOADED_FOLDER'], img.filename))
         return jsonify(response_data);
     else:
     	return "Where is the image?"
 
 if __name__ == '__main__':
-    app.run(debug=True, port=33507)
+    app.run(debug=False, port=33507)

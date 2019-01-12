@@ -13,12 +13,19 @@ const router = require('./routes');
 const port = process.env.PORT || 3000;
 const databaseURL = process.env.DATABASE || "mongodb://localhost:27017/paytm-hackathon";
 
+// const fileStorage = multer.diskStorage({
+// 	destination: (req, file, callback) => {
+// 		callback(null, path.resolve(__dirname, 'uploads'));
+// 	},
+// 	filename: (req, file, callback) => {
+// 		callback(null, new Date().toISOString() + '-' + file.originalname);
+// 	}
+// });
+
 const fileStorage = multer.diskStorage({
-	destination: (req, file, callback) => {
-		callback(null, './uploads');
-	},
+	destination: './uploads/',
 	filename: (req, file, callback) => {
-		callback(null, new Date().toISOString() + '-' + file.originalname);
+		callback(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
 	}
 });
 
