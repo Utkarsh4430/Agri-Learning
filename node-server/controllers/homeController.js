@@ -1,14 +1,19 @@
-// // WHAT THE HELL AM I DOING HERE? :)
-// const tf = require("@tensorflow/tfjs");
-// // Optional Load the binding:
-// // Use '@tensorflow/tfjs-node-gpu' if running with GPU.
-// require("@tensorflow/tfjs-node");
-const { spawn } = require("child_process");
-const path = require("path");
 const fs = require('fs');
 const request = require('request-promise');
 const FormData = require('form-data');
 const fileHelper = require('../utils/file');
+
+const cleanInput = (input) => {
+	let cleanInput = '';
+	for(let i = 0; i < input.length; i++) {
+		if(input[i] == ' ') {
+			cleanInput += '-';
+		} else {
+			cleanInput += input[i];
+		}
+	}
+	return cleanInput;
+}
 
 module.exports = homeController = {
 	getHome: (req, res, next) => {
@@ -28,17 +33,29 @@ module.exports = homeController = {
 		}
 		
 		const imageUrl = image.path;
-		const url = 'https://agrilearning-api.herokuapp.com/';
+		const url = 'http://localhost:33507';
 		const imagePath = `${__dirname}/../${imageUrl}`
-		request.post({url: url, formData: {
-		    file: fs.createReadStream(imagePath),
-		}})
-		    .then(data => {
-		        console.log(data.response.split("-"));
-		        fileHelper.deleteFile(imagePath);
-		    }).catch(err => {
-		        console.log(err);
-		    });
+		res.redirect('/Apple/Apple-Scab');
+		// request.post({url: url, formData: {
+		//     file: fs.createReadStream(imagePath),
+		// }})
+		//     .then(data => {
+		//     	console.log(data);
+		//         let arr = data.split("-");
+		//         let crop = arr[0].trim();
+		//         let disease = arr[1].trim();
+		//         fileHelper.deleteFile(imagePath);
+		//         if (disease === 'Health') {
+		//         	req.flash("success", "Your crop has no disease!");
+		//         	res.redirect('/');
+		//         } else {
+		//         	let cleanCrop = cleanInput(crop);
+		//         	let cleanDisease = cleanInput(disease);
+		//         	res.redirect(`/${cleanCrop}/${cleanDisease}`);
+		//         }
+		//     }).catch(err => {
+		//     	console.log("error");
+		//     });
 
 		console.log(imageUrl);
 		// fs.createReadStream(req.file.path).pipe(request.post('http://127.0.0.1:5000/', (err, data) => console.log(JSON.parse(data))));

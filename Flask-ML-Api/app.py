@@ -4,9 +4,28 @@ import logging, os
 from werkzeug import secure_filename
 import numpy as np
 from keras.models import load_model
+from keras.models import model_from_json
 import sys
 import json
 import cv2
+
+classes = {
+    0:'Apple-Apple Scab',
+    1:'Apple-Black Rot',
+    2:'Apple-Healthy',
+    3:'Corn-Common Rust',
+    4:'Corn-Healthy',
+    5:'Peach-Bacterial Spot',
+    6:'Peach-healthy',
+    7:'Potato-Early Blight',
+    8:'Potato-Late Blight',
+    9:'Potato-Healthy',
+    10:'Tomato-Bacterial Spot',
+    11:'Tomato-Tomato Mosaic Virus',
+    12:'Tomato-Healthy'
+}
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -20,8 +39,16 @@ PROJECT_HOME = os.path.dirname(os.path.realpath(__file__))
 UPLOAD_FOLDER = '{}/uploads/'.format(PROJECT_HOME)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-filePath = os.getcwd() + "/model.h5"
-model = load_model(filePath)
+filepath = os.getcwd() + "/model2.h5"
+model = load_model(filepath)
+
+# filePath = os.getcwd() + "/modelWeights.h5"
+# filePath2 = os.getcwd() + "/model.json"
+# json_file = open("model.json","r")
+# loaded_model_json = json_file.read()
+# json_file.close()
+# model = model_from_json(loaded_model_json)
+# model.load_weights(filePath)
 
 def create_new_folder(local_dir):
     newpath = local_dir
@@ -47,11 +74,14 @@ def api_root():
         img.save(saved_path)
         a = {"hellooooo": "from the python sideeeeee"}
         mat = cv2.imread(saved_path)
-        mat = cv2.resize(mat, (50, 50))
+        mat = cv2.resize(mat, (100, 100))
         mat = mat / 255.0
-        mat = mat.reshape(1, 50, 50, 3)
-        predict = model.predict(mat)
-        response_data = {"response": predict.tolist()}
+        mat = mat.reshape(1, 100, 100, 3)
+        print(mat)
+        print(mat.shape)
+        pred = model.predict(mat)
+        final = pred.argmax()
+        response_data = {"response": pred.tolist() }
         os.remove(os.path.join(app.config['UPLOADED_FOLDER'], img.filename))
         return jsonify(response_data);
     else:
