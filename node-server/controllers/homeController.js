@@ -1,14 +1,19 @@
-// // WHAT THE HELL AM I DOING HERE? :)
-// const tf = require("@tensorflow/tfjs");
-// // Optional Load the binding:
-// // Use '@tensorflow/tfjs-node-gpu' if running with GPU.
-// require("@tensorflow/tfjs-node");
-const { spawn } = require("child_process");
-const path = require("path");
 const fs = require('fs');
 const request = require('request-promise');
 const FormData = require('form-data');
 const fileHelper = require('../utils/file');
+
+const cleanInput = (input) => {
+	let cleanInput = '';
+	for(let i = 0; i < input.length; i++) {
+		if(input[i] == ' ') {
+			cleanInput += '-';
+		} else {
+			cleanInput += input[i];
+		}
+	}
+	return cleanInput;
+}
 
 module.exports = homeController = {
 	getHome: (req, res, next) => {
@@ -18,7 +23,6 @@ module.exports = homeController = {
 
 	postImage: async (req, res, next) => {
 		const image = req.file;
-		console.log("reacher here");
 		console.log(image);
 		if (!image) {
 			return res.status(422).render('home', {
@@ -29,36 +33,30 @@ module.exports = homeController = {
 		}
 		
 		const imageUrl = image.path;
-		const url = 'http://127.0.0.1:5000/';
+		const url = 'http://localhost:33507';
 		const imagePath = `${__dirname}/../${imageUrl}`
-		request.post({url: url, formData: {
-		    file: fs.createReadStream(imagePath),
-		    // ...and all other form inputs
-		    imageClass: 'twitterApp' // etc.
-		}})
-		    .then(data => {
-		        console.log(data);
-		        fileHelper.deleteFile(imagePath);
-		    }).catch(err => {
-		        console.log(err);
-		    });
-		// let data = new FormData();
-		// data.append('file', image);
-		
-		// axios.post(URL, data, {
-		//   headers: {
-		//     'accept': 'application/json',
-		//     'Accept-Language': 'en-US,en;q=0.8',
-		//     'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
-		//   }
-		// })
-		//   .then((response) => response.json())
-		//   .then(resp => console.log(resp))
-		//   .catch((error) => {
-		//     console.log(error);
-		//   });
-		
-		// const imageUrl = "uploads/2019-01-11T08:00:31.859Z-insect.jpg"
+		res.redirect('/Apple/Apple-Scab');
+		// request.post({url: url, formData: {
+		//     file: fs.createReadStream(imagePath),
+		// }})
+		//     .then(data => {
+		//     	console.log(data);
+		//         let arr = data.split("-");
+		//         let crop = arr[0].trim();
+		//         let disease = arr[1].trim();
+		//         fileHelper.deleteFile(imagePath);
+		//         if (disease === 'Health') {
+		//         	req.flash("success", "Your crop has no disease!");
+		//         	res.redirect('/');
+		//         } else {
+		//         	let cleanCrop = cleanInput(crop);
+		//         	let cleanDisease = cleanInput(disease);
+		//         	res.redirect(`/${cleanCrop}/${cleanDisease}`);
+		//         }
+		//     }).catch(err => {
+		//     	console.log("error");
+		//     });
+
 		console.log(imageUrl);
 		// fs.createReadStream(req.file.path).pipe(request.post('http://127.0.0.1:5000/', (err, data) => console.log(JSON.parse(data))));
 		// let pyScriptPath = path.join(__dirname, "../pyScript/app.py");
@@ -72,11 +70,6 @@ module.exports = homeController = {
   // 		pyProg.stderr.on("data", data => {
   //   		console.log(`stderr: ${data}`);
   // 		});
-		// NOW SEND THIS URL TO CNN MODEL
-		// GET THE RESULT FROM THE MODEL
-		// SEARCH FOR THE INSECT IN YOUR DATABASE
-		// SAVE THE INFORMATION IN LOCALS
-		// DELETE IMAGE FROM SERVER
 	},
 }
 
